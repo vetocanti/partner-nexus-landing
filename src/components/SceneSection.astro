@@ -1,0 +1,103 @@
+---
+import type { Scene } from '../config/scenes';
+import LimitStatus from './LimitStatus.astro';
+
+interface Props {
+  scene: Scene;
+  index: number;
+  last: boolean;
+}
+const { scene, index, last } = Astro.props;
+const Heading = index === 0 ? 'h1' : 'h2';
+const titleId = `${scene.id}-titulo`;
+const [before, after] = scene.titleHighlight ? scene.title.split(scene.titleHighlight) : [scene.title];
+---
+<section id={scene.id} class:list={['scene', last && 'scene--last']} data-scene aria-labelledby={titleId}>
+  <div class="scene__inner">
+    <div class="scene__copy" data-copy>
+      <p class="scene__eyebrow">{scene.eyebrow}</p>
+      <Heading id={titleId} class="scene__title">
+        {before}{scene.titleHighlight && <span class="data">{scene.titleHighlight.replace(' ', ' ')}</span>}{after}
+      </Heading>
+      <p class="scene__body">{scene.body}</p>
+      {scene.widget === 'estado-limite' && <LimitStatus />}
+      {
+        scene.cta && (
+          <a class:list={['btn', `btn--${scene.cta.variant ?? 'primary'}`, 'scene__cta']} href={scene.cta.href}>
+            {scene.cta.label}
+          </a>
+        )
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  /* Tramo de 200vh: la primera mitad fija el texto, la segunda es la transición del fondo. */
+  .scene {
+    position: relative;
+    height: 200vh;
+  }
+
+  .scene--last {
+    height: auto;
+  }
+
+  .scene__inner {
+    position: sticky;
+    top: 0;
+    display: flex;
+    align-items: center;
+    height: 100vh;
+    height: 100svh;
+    padding: var(--header-h) var(--gutter) 2rem;
+  }
+
+  .scene--last .scene__inner {
+    position: relative;
+  }
+
+  .scene__copy {
+    max-width: 40rem;
+  }
+
+  .scene__eyebrow {
+    margin-bottom: 1rem;
+    font: 500 0.8125rem/1.4 var(--font-mono);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--sand);
+  }
+
+  .scene__title {
+    font-size: clamp(1.75rem, 3.4vw + 0.5rem, 3rem);
+    font-weight: 600;
+    line-height: 1.12;
+    letter-spacing: -0.015em;
+    color: var(--copper);
+    text-wrap: balance;
+  }
+
+  h1.scene__title {
+    font-size: clamp(2.25rem, 5vw + 0.5rem, 4.25rem);
+  }
+
+  .scene__body {
+    max-width: 60ch;
+    margin-top: 1.25rem;
+    font-size: clamp(1.0625rem, 0.4vw + 0.95rem, 1.1875rem);
+    text-wrap: pretty;
+  }
+
+  .scene__cta {
+    margin-top: 2rem;
+  }
+
+  @media (max-width: 768px) {
+    .scene__inner {
+      align-items: flex-end;
+      padding-right: 3rem;
+      padding-bottom: max(2.5rem, env(safe-area-inset-bottom));
+    }
+  }
+</style>

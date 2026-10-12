@@ -1,0 +1,27 @@
+---
+const year = new Date().getFullYear();
+---
+<footer class="footer">
+  <p><b>Partner Nexus</b> · Cumplimiento ambiental para minería. Producto en desarrollo.</p>
+  <p>© {year} Partner Nexus</p>
+</footer>
+
+<style>
+  .footer {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0.5rem 2rem;
+    padding: 2rem var(--gutter);
+    background: var(--surface);
+    font-size: 0.875rem;
+    color: rgb(243 237 228 / 0.85);
+  }
+
+  b {
+    font-weight: 600;
+    color: var(--text);
+  }
+</style>

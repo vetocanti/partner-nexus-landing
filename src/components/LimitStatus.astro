@@ -1,0 +1,90 @@
+---
+// Escala ilustrativa: 0–115 % del límite.
+const SCALE = 115;
+const pct = (v: number) => `${((v / SCALE) * 100).toFixed(2)}%`;
+---
+<figure class="limit">
+  <div class="limit__bar" aria-hidden="true">
+    <span class="limit__seg limit__seg--ok" style={`width:${pct(85)}`}></span>
+    <span class="limit__seg limit__seg--warn" style={`width:${pct(15)}`}></span>
+    <span class="limit__seg limit__seg--crit" style={`width:${pct(15)}`}></span>
+    <span class="limit__mark" style={`left:${pct(85)}`}></span>
+  </div>
+  <ul class="limit__legend">
+    <li><i class="limit__dot limit__dot--ok"></i>Cumple <span>&lt; 85 %</span></li>
+    <li><i class="limit__dot limit__dot--warn"></i>Alerta <span>85–100 %</span></li>
+    <li><i class="limit__dot limit__dot--crit"></i>Crítico <span>&gt; 100 %</span></li>
+  </ul>
+  <figcaption class="visually-hidden">Estados de un parámetro respecto de su límite (ejemplo ilustrativo).</figcaption>
+</figure>
+
+<style>
+  .limit {
+    max-width: 28rem;
+    margin: 1.75rem 0 0;
+  }
+
+  .limit__bar {
+    position: relative;
+    display: flex;
+    height: 0.5rem;
+  }
+
+  .limit__seg:first-child {
+    border-radius: 999px 0 0 999px;
+  }
+
+  .limit__seg:nth-child(3) {
+    border-radius: 0 999px 999px 0;
+  }
+
+  .limit__seg--ok,
+  .limit__dot--ok {
+    background: var(--ok);
+  }
+
+  .limit__seg--warn,
+  .limit__dot--warn {
+    background: var(--warn);
+  }
+
+  .limit__seg--crit,
+  .limit__dot--crit {
+    background: var(--crit);
+  }
+
+  .limit__mark {
+    position: absolute;
+    top: -0.375rem;
+    width: 2px;
+    height: 1.25rem;
+    margin-left: -1px;
+    background: var(--cyan);
+  }
+
+  .limit__legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 1.25rem;
+    margin: 0.85rem 0 0;
+    padding: 0;
+    list-style: none;
+    font: 400 0.8125rem/1.4 var(--font-mono);
+  }
+
+  .limit__legend li {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .limit__legend span {
+    color: rgb(243 237 228 / 0.8);
+  }
+
+  .limit__dot {
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 50%;
+  }
+</style>

@@ -1,0 +1,70 @@
+---
+import { site } from '../config/site';
+import { withBase } from '../config/paths';
+---
+<header class="header">
+  <a class="wordmark" href="#inicio" aria-label="Partner Nexus, ir al inicio">
+    <img src={withBase('/brand/mark-light.webp')} width="176" height="96" alt="" />
+    <span class="wordmark__text" aria-hidden="true"><b>Partner</b> Nexus</span>
+  </a>
+  <a class="btn btn--primary header__cta" href={site.pilotHref}>{site.pilotLabel}</a>
+</header>
+
+<style>
+  .header {
+    position: fixed;
+    inset: 0 0 auto;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    height: var(--header-h);
+    padding: 0 var(--gutter);
+  }
+
+  /* Sin fundido del texto, el header necesita fondo propio para no mezclarse con el contenido. */
+  @media (prefers-reduced-motion: reduce) {
+    .header {
+      background: rgb(14 21 23 / 0.92);
+    }
+  }
+
+  .wordmark {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    text-decoration: none;
+  }
+
+  .wordmark img {
+    width: auto;
+    height: 1.75rem;
+  }
+
+  .wordmark__text {
+    font-size: 0.9375rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  .wordmark__text b {
+    font-weight: 600;
+  }
+
+  .header__cta {
+    min-height: 2.5rem;
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+  }
+
+  @media (max-width: 420px) {
+    .wordmark__text {
+      font-size: 0.8125rem;
+      letter-spacing: 0.1em;
+    }
+    .wordmark img {
+      height: 1.5rem;
+    }
+  }
+</style>

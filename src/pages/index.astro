@@ -1,0 +1,37 @@
+---
+import Base from '../layouts/Base.astro';
+import Header from '../components/Header.astro';
+import Stage from '../components/Stage.astro';
+import SceneSection from '../components/SceneSection.astro';
+import ProgressDots from '../components/ProgressDots.astro';
+import Footer from '../components/Footer.astro';
+import { scenes } from '../config/scenes';
+import { site } from '../config/site';
+
+const hero = scenes[0];
+---
+<Base title={site.title} description={site.description}>
+  <Fragment slot="head">
+    <link rel="preload" as="image" href={hero.imageMobile} media="(max-width: 768px)" fetchpriority="high" />
+    <link rel="preload" as="image" href={hero.image} media="(min-width: 769px)" fetchpriority="high" />
+  </Fragment>
+
+  <Header />
+  <Stage scenes={scenes} />
+  <main id="contenido" class="content" tabindex="-1">
+    {scenes.map((scene, i) => <SceneSection scene={scene} index={i} last={i === scenes.length - 1} />)}
+  </main>
+  <ProgressDots scenes={scenes} />
+  <Footer />
+</Base>
+
+<style>
+  .content {
+    position: relative;
+    z-index: 1;
+  }
+
+  .content:focus {
+    outline: none;
+  }
+</style>

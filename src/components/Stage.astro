@@ -1,0 +1,140 @@
+---
+import type { Scene } from '../config/scenes';
+
+interface Props {
+  scenes: Scene[];
+}
+const { scenes } = Astro.props;
+const mobileHeight = (s: Scene) => Math.round((768 * s.height) / s.width);
+---
+<!-- Fondo decorativo: el contenido está en el HTML de cada sección. -->
+<div class="stage" data-stage aria-hidden="true">
+  {
+    scenes.map((s, i) => {
+      const first = i === 0;
+      return (
+        <div
+          class:list={['layer', first && 'is-visible']}
+          data-layer
+          data-loaded={first ? '' : undefined}
+          data-video-webm={s.video?.webm}
+          data-video-mp4={s.video?.mp4}
+          data-poster={s.video ? s.image : undefined}
+          style={`--pos-d:${s.objectPositionDesktop};--pos-m:${s.objectPositionMobile};${first ? 'opacity:1' : ''}`}
+        >
+          <picture>
+            <source
+              media="(max-width: 768px)"
+              width={768}
+              height={mobileHeight(s)}
+              {...(first ? { srcset: s.imageMobile } : { 'data-srcset': s.imageMobile })}
+            />
+            <img
+              alt=""
+              width={s.width}
+              height={s.height}
+              decoding="async"
+              fetchpriority={first ? 'high' : 'low'}
+              {...(first ? { src: s.image } : { 'data-src': s.image })}
+            />
+          </picture>
+          {s.video && (
+            <video class="layer__video" muted playsinline preload="metadata" tabindex="-1" disableremoteplayback />
+          )}
+        </div>
+      );
+    })
+  }
+  <div class="stage__shade"></div>
+</div>
+
+<script>
+  import { initStage } from '../scripts/stage';
+  initStage();
+</script>
+
+<style>
+  .stage {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 0;
+    width: 100%;
+    /* lvh evita re-encuadrar la foto cuando aparece o se oculta la barra del navegador móvil. */
+    height: 100vh;
+    height: 100lvh;
+    overflow: hidden;
+    background: var(--bg);
+    contain: layout paint size;
+  }
+
+  .layer {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    visibility: hidden;
+    transform-origin: 50% 50%;
+  }
+
+  .layer.is-visible {
+    visibility: visible;
+  }
+
+  .layer.is-animating {
+    will-change: transform, opacity;
+  }
+
+  .layer img,
+  .layer__video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: var(--pos-d);
+  }
+
+  .layer__video {
+    opacity: 0;
+  }
+
+  .layer.is-video .layer__video {
+    opacity: 1;
+  }
+
+  /* Capa oscura: refuerza la columna de texto (izquierda) y el header.
+     Valores medidos para contraste AA del texto y de los títulos en cobre en las 7 escenas. */
+  .stage__shade {
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(180deg, rgb(14 21 23 / 0.6) 0, rgb(14 21 23 / 0) 7rem),
+      linear-gradient(
+        90deg,
+        rgb(14 21 23 / 0.93) 0%,
+        rgb(14 21 23 / 0.9) 52%,
+        rgb(14 21 23 / 0.5) 72%,
+        rgb(14 21 23 / 0.3) 100%
+      );
+  }
+
+  @media (max-width: 768px) {
+    .layer img,
+    .layer__video {
+      object-position: var(--pos-m);
+    }
+
+    /* En móvil el texto va abajo. */
+    .stage__shade {
+      background:
+        linear-gradient(180deg, rgb(14 21 23 / 0.65) 0, rgb(14 21 23 / 0) 6rem),
+        linear-gradient(
+          0deg,
+          rgb(14 21 23 / 0.95) 0%,
+          rgb(14 21 23 / 0.9) 55%,
+          rgb(14 21 23 / 0.5) 75%,
+          rgb(14 21 23 / 0.3) 100%
+        );
+    }
+  }
+</style>
