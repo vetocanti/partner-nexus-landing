@@ -20,10 +20,14 @@ interface Layer {
   ty: number;
   visible: boolean;
   animating: boolean;
-  showVideo: boolean;
+  videoOpacity: number;
 }
 
+/** Fracción del tramo con fundido entre imagen y video en cada extremo del clip. */
+const VIDEO_EDGE = 0.12;
+
 const clamp01 = (v: number) => Math.min(1, Math.max(0, v));
+const round = (v: number) => Math.round(v * 1000) / 1000;
 const ease = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
 
 export function initStage() {
@@ -44,7 +48,7 @@ export function initStage() {
     ty: 0,
     visible: i === 0,
     animating: false,
-    showVideo: false,
+    videoOpacity: 0,
   }));
 
   const reduceQuery = matchMedia('(prefers-reduced-motion: reduce)');
@@ -123,11 +127,11 @@ export function initStage() {
     layer.seekTarget = null;
   }
 
-  function write(layer: Layer, o: number, s: number, ty: number, visible: boolean, animating: boolean, showVideo: boolean) {
+  function write(layer: Layer, o: number, s: number, ty: number, visible: boolean, animating: boolean, videoOpacity: number) {
     const el = layer.el;
     if (visible !== layer.visible) el.classList.toggle('is-visible', (layer.visible = visible));
     if (animating !== layer.animating) el.classList.toggle('is-animating', (layer.animating = animating));
-    if (showVideo !== layer.showVideo) el.classList.toggle('is-video', (layer.showVideo = showVideo));
+    if (layer.video && videoOpacity !== layer.videoOpacity) layer.video.style.opacity = String((layer.videoOpacity = videoOpacity));
     if (o !== layer.o) el.style.opacity = String((layer.o = o));
     if (s !== layer.s || ty !== layer.ty) {
       layer.s = s;
@@ -151,15 +155,20 @@ export function initStage() {
       if (reduce) {
         // Cambio directo a mitad del tramo, sin zoom ni fundido.
         const shown = j === (p >= 0.5 ? i + 1 : i);
-        write(layer, shown ? 1 : 0, 1, 0, shown, false, false);
+        write(layer, shown ? 1 : 0, 1, 0, shown, false, 0);
       } else if (j === i && useVideo) {
-        write(layer, 1, 1, 0, true, false, p > 0);
+        // El video entra sobre la imagen N y, al final, la imagen N+1 entra sobre el video.
+        // Si el clip calza fotograma a fotograma con las imágenes, el fundido no se nota.
+        write(layer, 1, 1, 0, true, false, round(clamp01(p / VIDEO_EDGE)));
+      } else if (j === i + 1 && useVideo) {
+        const o = round(clamp01((p - (1 - VIDEO_EDGE)) / VIDEO_EDGE));
+        write(layer, o, 1, 0, o > 0, o > 0 && o < 1, 0);
       } else if (j === i) {
-        write(layer, 1 - e, 1 + 0.08 * e, -3 * e, true, p > 0 && p < 1, false);
-      } else if (j === i + 1 && !useVideo) {
-        write(layer, e, 1.06 - 0.06 * e, 0, p > 0, p > 0 && p < 1, false);
+        write(layer, 1 - e, 1 + 0.08 * e, -3 * e, true, p > 0 && p < 1, 0);
+      } else if (j === i + 1) {
+        write(layer, e, 1.06 - 0.06 * e, 0, p > 0, p > 0 && p < 1, 0);
       } else {
-        write(layer, 0, 1, 0, false, false, false);
+        write(layer, 0, 1, 0, false, false, 0);
       }
     });
 

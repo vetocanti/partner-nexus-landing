@@ -4,3 +4,6 @@ dist/
 .env
 .env.*
 .DS_Store
+
+# Videos fuente sin procesar (las versiones web van en public/videos/)
+videos-originales/

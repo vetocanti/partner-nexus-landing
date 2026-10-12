@@ -32,7 +32,8 @@ Con eso basta. Durante la transición de esa escena, el scroll controla el video
 
 Recomendaciones para que el avance sea fluido al hacer scrub:
 
-- El primer fotograma debe coincidir con la imagen N y el último con la imagen N+1.
+- Lo ideal es que el primer fotograma coincida con la imagen N y el último con la imagen N+1. Si no coinciden, un fundido corto (12 % del tramo en cada extremo) disimula la diferencia.
+- Los originales van en `videos-originales/` (no se suben al repo). Las versiones web recortadas quedan en `public/videos/`: clip-1 completo (0–10 s), clip-2 de 0 a 5 s y clip-3 de 3,0 a 7,5 s.
 - Usa la misma proporción que las imágenes (16:9 aprox.), sin audio y de 2 a 4 s.
 - Pon keyframes frecuentes, porque sin ellos el seek va a saltos:
   ```sh
